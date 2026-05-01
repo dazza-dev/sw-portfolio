@@ -1050,6 +1050,10 @@ function sw_portfolio_register_graphql_filters()
                 'type' => 'String',
                 'description' => __('Filter by service slug', SW_PORTFOLIO_TEXT_DOMAIN),
             ];
+            $fields['featured'] = [
+                'type' => 'Boolean',
+                'description' => __('Filter by featured status', SW_PORTFOLIO_TEXT_DOMAIN),
+            ];
         }
         return $fields;
     }, 10, 2);
@@ -1080,6 +1084,18 @@ function sw_portfolio_register_graphql_filters()
                     'terms'    => sanitize_text_field($args['where'][$arg_key]),
                 ];
             }
+        }
+
+        // Filter by featured status
+        if (isset($args['where']['featured'])) {
+            if (!isset($query_args['meta_query'])) {
+                $query_args['meta_query'] = [];
+            }
+            $query_args['meta_query'][] = [
+                'key'     => '_portfolio_featured',
+                'value'   => $args['where']['featured'] ? '1' : '0',
+                'compare' => '=',
+            ];
         }
 
         return $query_args;
